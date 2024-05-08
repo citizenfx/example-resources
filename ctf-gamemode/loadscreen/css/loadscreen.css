@@ -1,0 +1,159 @@
+@font-face {
+    font-family: 'BankGothic';
+    src: url('bankgothic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+.backdrop {
+    position: relative;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+
+    background-image: url(../loadscreen.jpg);
+    background-size: cover;
+}
+
+.top {
+    color: #fff;
+
+    position: relative;
+    top: 5vh;
+    margin-left: 5vw;
+    margin-right: 5vw;
+}
+
+.top h1 {
+    font-family: BankGothic;
+    font-size: 60px;
+
+    margin: 0px;
+}
+
+.top h2 {
+    font-family: BankGothic;
+    font-size: 40px;
+
+    margin: 0px;
+
+    color: #ddd;
+}
+
+.bottom {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90vw;
+    bottom: 5vh;
+}
+
+h1, h2 {
+  position: relative;
+  background: transparent;
+  z-index: 0;
+}
+
+/* add a single stroke */
+h1:before, h2:before {
+  content: attr(title);
+  position: absolute;
+  -webkit-text-stroke: 0.1em #000;
+  left: 0;
+  z-index: -1;
+}
+
+.loading-container {
+    z-index: 5;
+    color: #fff;
+    font-family: "Segoe UI";
+}
+
+.loading-container .message-tip {
+    font-family: BankGothic;
+    text-transform: uppercase;
+    font-size: 15px;
+    margin: 0px;
+    display: inline-block;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out; /* Adjust the transition duration and timing function as needed */
+}
+
+.loadbar {
+    display: flex; /* Use flexbox to align loading bars */
+    justify-content: space-between; /* Evenly distribute space between loading bars */
+    align-items: stretch; /* Ensure loading bars stretch to fill the height */
+    background-color: rgba(151, 151, 151, 0.3);
+    height: 20px;
+    margin-left: 2px;
+    margin-right: 3px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.progress-wrapper {
+    flex: 1; /* Each loading bar takes up equal space */
+    height: 100%;
+    position: relative;
+    text-align: center;
+    font-size: 10px;
+
+    display: flex;
+    align-items: center;
+    display: inline-block;
+}
+
+
+/* Property for all the progress bars */
+.progress-bar {
+    width: 0%;
+    height: 20px;
+    left: 0%;
+}
+
+.blue {
+    background-color: rgba(3, 0, 153, 0.4);
+}
+
+.white {
+    background-color: rgba(252, 252, 252, 0.4);
+}
+
+.red {
+    background-color: rgba(255, 0, 0, 0.4);
+}
+
+/* Hide scrollbar for Chrome/CEF */
+.log-line-msg::-webkit-scrollbar {
+    display: none;
+}
+
+.log-line-msg {
+    height: 35vh;
+    width: auto;
+    position: relative;
+    margin-top: 10vh;
+    margin-left: 5vw;
+    margin-right: 5vw;
+    padding: 10px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    background-color: rgba(151, 151, 151, 0.236); /* Default background color */
+    border-radius: 5px; /* Add border radius for a rounded appearance */
+}
+
+/* Style for individual message divs */
+.log-line-msg > .message {
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    color: #fff; /* Text color */
+    background-color: rgba(160, 0, 0, 0.1); /* Default background color */
+    font-family: "Segoe UI";
+}
