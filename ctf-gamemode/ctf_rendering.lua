@@ -36,7 +36,7 @@ AddEventHandler('onClientResourceStart', function(resourceName)
     -- https://docs.fivem.net/docs/game-references/text-formatting/#content-formatting-codes
     AddTextEntry("textRenderingEntry", "~a~")
     -- Request the texture dictionary for our instructional buttons
-    RequestStreamedTextureDict("commonmenutu")
+    RequestStreamedTextureDict("commonmenutu", false)
     buttonsHandle = RequestScaleformMovie('INSTRUCTIONAL_BUTTONS') -- Request the scaleform to be loaded
 end)
 

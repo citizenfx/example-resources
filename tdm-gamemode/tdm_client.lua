@@ -58,6 +58,8 @@ local btnCaptions = UIConfig.btnCaptions
 -- Set the teamID to spectator on script initialization
 LocalPlayer.state:set('teamID', TeamType.TEAM_SPECTATOR, true)
 
+-- Caching the spawnmanager export
+local spawnmanager = exports.spawnmanager
 
 ---------------------------------------------- Functions ----------------------------------------------
 
@@ -66,7 +68,7 @@ function onPlayerSpawnCallback()
     local ped = PlayerPedId() -- 'Cache' our ped so we're not invoking the native multiple times.
 
     -- Spawn the player via an export at the player team's spawn point.
-    exports.spawnmanager:spawnPlayer(
+    spawnmanager:spawnPlayer(
         spawnPoints[LocalPlayer.state.teamID]
     )
 
@@ -159,7 +161,7 @@ function tryCreateBlips()
         if GetBlipFromEntity(ped) == 0 then
             if Player(GetPlayerServerId(player)).state.teamID ~= LocalPlayer.state.teamID then
                 print('Added ' .. GetPlayerName(player))
-                table.insert(enemyBlips, AddBlipForEntity(ped))  -- Store the blip handle in the table
+                enemyBlips[#enemyBlips+1] = AddBlipForEntity(ped) -- Store the blip handle in the table
             end
         end
     end
@@ -262,7 +264,7 @@ AddEventHandler("receiveTeamData", function(teamsData)
     receivedServerTeams = teamsData
 
     for _, team in ipairs(receivedServerTeams) do
-        spawnPoints[team.id] = exports.spawnmanager:addSpawnPoint({
+        spawnPoints[team.id] = spawnmanager:addSpawnPoint({
             x = team.basePosition.x,
             y = team.basePosition.y,
             z = team.basePosition.z,
@@ -335,8 +337,8 @@ end)
 
 --- This handles player auto spawning after death.
 -- See spawnmanager's documentation for more: https://docs.fivem.net/docs/resources/spawnmanager/
-exports.spawnmanager:setAutoSpawnCallback(onPlayerSpawnCallback)
-exports.spawnmanager:setAutoSpawn(true)
+spawnmanager:setAutoSpawnCallback(onPlayerSpawnCallback)
+spawnmanager:setAutoSpawn(true)
 
 ---------------------------------------------- Threads ----------------------------------------------
 

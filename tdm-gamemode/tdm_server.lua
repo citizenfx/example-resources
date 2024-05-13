@@ -183,7 +183,7 @@ AddEventHandler("tdm:onPlayerKilled", function(killerID, victimID)
         -- Notify clients about the leading team
         local leadingTeam = tdmGame:getLeadingTeam()
         if leadingTeam then
-            local message = "Team " .. leadingTeam:getName() .. " is leading with " .. leadingTeam.kills .. " kill(s)"
+            local message = string.format("Team %s is leading with %s kill(s)", leadingTeam:getName(), leadingTeam.kills)
             -- Send a notification to every client, indicating by sending -1 as the source parameter
             TriggerClientEvent("SendClientHudNotification", -1, message)
         end
@@ -221,7 +221,7 @@ AddEventHandler("sendTeamDataToClient", function(source)
                 playerHeading = team.playerHeading
             }
             -- Insert the team data table into teamsDataArray
-            table.insert(teamsDataArray, teamData)
+            teamsDataArray[#teamsDataArray+1] = teamData
         end
     end
     -- Trigger the "receiveTeamData" event on the client with the team data array

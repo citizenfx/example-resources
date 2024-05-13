@@ -56,6 +56,8 @@ local CONTROL_LSHIFT = 209 -- Left shift
 local BLIP_COLOR_BLUE = 4
 local BLIP_COLOR_RED = 1
 
+local spawnmanager = exports.spawnmanager -- Caching the spawnmanager export
+
 -- Set the teamID to spectator on script initialization
 LocalPlayer.state:set('teamID', TeamType.TEAM_SPECTATOR, true)
 
@@ -79,7 +81,7 @@ AddEventHandler("SetObjectiveVisible", function(flagEntityNetID, bVisible)
 
         print("SetObjectiveVisible: " .. GetEntityArchetypeName(flagEntity) .. " to our player, owner is: " .. GetPlayerName(NetworkGetEntityOwner(flagEntity)))
 
-        SetEntityVisible(flagEntity, bVisible, 0)
+        SetEntityVisible(flagEntity, bVisible)
     else
         print("AttachFlagToPlayer: Something terrible happened, where's our flag?")
     end
@@ -105,7 +107,7 @@ AddEventHandler("receiveTeamData", function(teamsData)
     receivedServerTeams = teamsData
 
     for _, team in ipairs(receivedServerTeams) do
-        spawnPoints[team.id] = exports.spawnmanager:addSpawnPoint({
+        spawnPoints[team.id] = spawnmanager:addSpawnPoint({
             x = team.basePosition.x,
             y = team.basePosition.y,
             z = team.basePosition.z,
@@ -154,7 +156,7 @@ function handleTeamSelectionControl()
         bPressedSpawnKey = true
 
         -- Spawn the player
-        exports.spawnmanager:spawnPlayer(
+        spawnmanager:spawnPlayer(
             spawnPoints[LocalPlayer.state.teamID], 
             onPlayerSpawnCallback
         )
@@ -177,7 +179,7 @@ function onPlayerSpawnCallback()
     local ped = PlayerPedId()
 
     -- Spawn the player via an export at the player team's spawn point.
-    exports.spawnmanager:spawnPlayer(
+    spawnmanager:spawnPlayer(
         spawnPoints[LocalPlayer.state.teamID]
     )
 
@@ -414,8 +416,8 @@ end
 
 --- This handles player auto spawning after death.
 -- See spawnmanager's documentation for more: https://docs.fivem.net/docs/resources/spawnmanager/
-exports.spawnmanager:setAutoSpawnCallback(onPlayerSpawnCallback)
-exports.spawnmanager:setAutoSpawn(true)
+spawnmanager:setAutoSpawnCallback(onPlayerSpawnCallback)
+spawnmanager:setAutoSpawn(true)
 
 ----------------------------------------------- Threads -----------------------------------------------
 
