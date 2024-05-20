@@ -693,7 +693,7 @@ AddEventHandler("sendTeamDataToClient", function(source)
                 baseNetworkId = team.networkedID,
                 score = team.score
             }
-            table.insert(teamsDataArray, teamData)
+            teamsDataArray[#teamsDataArray+1] = teamData
         end
     end
     -- Finally trigger the client event receiveTeamData declared in ctf_client.lua
