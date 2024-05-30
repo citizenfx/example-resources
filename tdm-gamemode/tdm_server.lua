@@ -54,7 +54,7 @@ end
 -- 
 -- Example:
 -- ```lua
--- local blueTeam = Team.new(TeamType.TEAM_RED, vector3(2555.1860, -333.1058, 92.9928), 'a_m_y_beachvesp_01')
+-- local blueTeam = Team.new(tdmConfig.type.TEAM_RED, vector3(2555.1860, -333.1058, 92.9928), 'a_m_y_beachvesp_01')
 -- blueTeam:destroy()
 -- ```
 function Team:destroy()
@@ -74,10 +74,10 @@ end
 -- blueTeam:getName()
 -- ```
 function Team:getName()
-    if self.id == TeamType.TEAM_BLUE then
+    if self.id == tdmConfig.type.TEAM_BLUE then
         return "Blue"
     end
-    if self.id == TeamType.TEAM_RED then
+    if self.id == tdmConfig.type.TEAM_RED then
         return "Red"
     end
     return "Spectator"
@@ -197,7 +197,7 @@ end)
 -- https://docs.fivem.net/docs/scripting-reference/events/server-events/
 RegisterServerEvent('playerJoining')
 AddEventHandler('playerJoining', function(source, oldID)
-    Player(source).state.teamID = TeamType.TEAM_RED -- Initialize to team red
+    Player(source).state.teamID = tdmConfig.type.TEAM_RED -- Initialize to team red
     TriggerEvent("sendTeamDataToClient", source) -- Trigger the event locally (on the server)
 end)
 
@@ -211,7 +211,7 @@ AddEventHandler("sendTeamDataToClient", function(source)
     -- Iterate through each team in tdmGame.teams
     for _, team in ipairs(tdmGame.teams) do
         -- Exclude TEAM_SPECTATOR from the data
-        if team.id ~= TeamType.TEAM_SPECTATOR then
+        if team.id ~= tdmConfig.type.TEAM_SPECTATOR then
             -- Create a table containing team information
             local teamData = {
                 id = team.id,

@@ -2,7 +2,7 @@
     File: tdm_client.lua
     Description:
         This is the main client file and its main purpose is:
-            - To handle the following client related logic executed via our main thread: (see Citizen.CreateThread).
+            - To handle the following client related logic executed via our main thread: (see CreateThread).
                 - To draw any instructional UI on the screen: (see drawScaleFormUI).
                 - To perform team selection and camera manipulation if the user is in camera selection: (see boolean bInTeamSelection).
 
@@ -56,7 +56,8 @@ local UITeamTxtProps = UIConfig.teamTxtProperties
 local btnCaptions = UIConfig.btnCaptions
 
 -- Set the teamID to spectator on script initialization
-LocalPlayer.state:set('teamID', TeamType.TEAM_SPECTATOR, true)
+-- Learn more about state bags to https://docs.fivem.net/docs/scripting-manual/networking/state-bags/#player-state
+LocalPlayer.state:set('teamID', tdmConfig.type.TEAM_SPECTATOR, true)
 
 -- Caching the spawnmanager export
 local spawnmanager = exports.spawnmanager
@@ -64,7 +65,7 @@ local spawnmanager = exports.spawnmanager
 ---------------------------------------------- Functions ----------------------------------------------
 
 --- Our callback method for the autoSpawnCallback down below, we give ourselves guns here.
-function onPlayerSpawnCallback()
+local onPlayerSpawnCallback = function()
     local ped = PlayerPedId() -- 'Cache' our ped so we're not invoking the native multiple times.
 
     -- Spawn the player via an export at the player team's spawn point.
@@ -86,7 +87,7 @@ function onPlayerSpawnCallback()
     SetEntityVisible(ped, true)
 end
 
-function setIntoTeamSelection(team, bIsInTeamSelection)
+local setIntoTeamSelection = function(team, bIsInTeamSelection)
     -- Sets the player into camera selection
     -- Main camera handle only gets created once in order to manipulate it later
     local ped = PlayerPedId() -- Let's cache the Player Ped ID so we're not constantly calling PlayerPedId()
@@ -106,16 +107,16 @@ function setIntoTeamSelection(team, bIsInTeamSelection)
     SetEntityVisible(ped, not bIsInTeamSelection)
 end
 
-function buttonMessage(text)
+local buttonMessage = function(text)
     BeginTextCommandScaleformString("STRING")
-    AddTextComponentScaleform(text)
+    AddTextComponentScaleform(Locales[tostring(GetCurrentLanguage())][text] or text) -- Calling native every time so if player change game language, it will update automatically
     EndTextCommandScaleformString()
 end
 
 --- Draws the scaleform UI displaying controller buttons and associated messages for player instructions.
 --
 -- @param buttonsHandle (number) The handle for the scaleform movie.
-function drawScaleFormUI(buttonsHandle)
+local drawScaleFormUI = function(buttonsHandle)
     while not HasScaleformMovieLoaded(buttonsHandle) do -- Wait for the scaleform to be fully loaded
         Wait(0)
     end
@@ -125,30 +126,30 @@ function drawScaleFormUI(buttonsHandle)
     PushScaleformMovieFunction(buttonsHandle, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(2)
     ScaleformMovieMethodAddParamPlayerNameString("~INPUT_SPRINT~")
-    buttonMessage(btnCaptions.Spawn)
+    buttonMessage('spawn')
     PopScaleformMovieFunctionVoid()
 
     PushScaleformMovieFunction(buttonsHandle, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(1)
     ScaleformMovieMethodAddParamPlayerNameString("~INPUT_ATTACK~")
-    buttonMessage(btnCaptions.PreviousTeam)
+    buttonMessage('previous_team')
     PopScaleformMovieFunctionVoid()
 
     PushScaleformMovieFunction(buttonsHandle, "SET_DATA_SLOT")
     PushScaleformMovieFunctionParameterInt(0)
     ScaleformMovieMethodAddParamPlayerNameString("~INPUT_AIM~") -- The button to display
-    buttonMessage(btnCaptions.NextTeam) -- the message to display next to it
+    buttonMessage('next_team') -- the message to display next to it
     PopScaleformMovieFunctionVoid()
     
     CallScaleformMovieMethod(buttonsHandle, 'DRAW_INSTRUCTIONAL_BUTTONS') -- Sets buttons ready to be drawn
 end
 
-function removePlayerBlips()
+local removePlayerBlips = function()
     for blipTableIdx, blipHandle in ipairs(enemyBlips) do
         local blipOwningEntity = GetBlipInfoIdEntityIndex(blipHandle)
         local playerId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(blipOwningEntity))
         if not DoesEntityExist(blipOwningEntity) or Player(playerId).state.teamID == LocalPlayer.state.teamID then
-            print("Removed orphan blip (" .. GetPlayerName(NetworkGetPlayerIndexFromPed(blipOwningEntity)) .. ")")
+            Citizen.Trace("Removed orphan blip (" .. GetPlayerName(NetworkGetPlayerIndexFromPed(blipOwningEntity)) .. ")")
             RemoveBlip(blipHandle) 
             table.remove(enemyBlips, blipTableIdx)
         end
@@ -160,7 +161,7 @@ function tryCreateBlips()
         local ped = GetPlayerPed(player)
         if GetBlipFromEntity(ped) == 0 then
             if Player(GetPlayerServerId(player)).state.teamID ~= LocalPlayer.state.teamID then
-                print('Added ' .. GetPlayerName(player))
+                Citizen.Trace('Added ' .. GetPlayerName(player))
                 enemyBlips[#enemyBlips+1] = AddBlipForEntity(ped) -- Store the blip handle in the table
             end
         end
@@ -181,7 +182,7 @@ end
 -- @param g (number) The value for green (0-255).
 -- @param b (number) The value for blue (0-255).
 -- @param alpha (number) The value for alpha/opacity (0-255).
-function drawTxt(x, y, width, height, scale, text, r, g, b, a)
+local drawTxt = function(x, y, width, height, scale, text, r, g, b, a)
     SetTextFont(2)
     SetTextProportional(0)
     SetTextScale(scale, scale)
@@ -233,19 +234,26 @@ function handleTeamSelectionControl()
 end
 
 -- Define a function to format the team name
-function formatTeamName(receivedServerTeams, teamID)
+local formatTeamName = function(receivedServerTeams, teamID)
+    -- Check player language and save in cache
+    local currentLanguage = tostring(GetCurrentLanguage())
+    local teamData = receivedServerTeams[teamID]
+    local localizedTeamName
+
     -- Check if receivedServerTeams is valid and contains the teamID
-    if receivedServerTeams and receivedServerTeams[teamID] then
+    if teamData and teamData.name then
         -- Concatenate the team name with " Team" suffix
-        return receivedServerTeams[teamID].name .. " Team"
+        localizedTeamName = Locales[currentLanguage][teamData.name] or (teamData.name .. " " .. (Locales[currentLanguage]['team'] or "Team"))
     else
         -- Return a default message if the team name cannot be formatted
-        return "Unknown Team"
+        localizedTeamName = "Unknown Team"
     end
+
+    return localizedTeamName
 end
 
 function shouldGoIntoCameraSelection()
-    return LocalPlayer.state.teamID == TeamType.TEAM_SPECTATOR and not bInTeamSelection
+    return LocalPlayer.state.teamID == tdmConfig.type.TEAM_SPECTATOR and not bInTeamSelection
 end
 
 
@@ -322,7 +330,7 @@ end)
 --- This event is dispatched by spawnmanager once the player spawns (URL at the top of the file).
 AddEventHandler('playerSpawned', function()
     if shouldGoIntoCameraSelection() then
-        setIntoTeamSelection(TeamType.TEAM_BLUE, true)
+        setIntoTeamSelection(tdmConfig.type.TEAM_BLUE, true)
     end
 end)
 
@@ -330,7 +338,7 @@ end)
 -- For more information on RegisterCommand, see the following link:
 -- https://docs.fivem.net/natives/?_0x5FA79B0F
 RegisterCommand("switchteam", function(source, args, rawCommand)
-    setIntoTeamSelection(TeamType.TEAM_BLUE, true)
+    setIntoTeamSelection(tdmConfig.type.TEAM_BLUE, true)
 end)
 
 ---------------------------------------------- Callbacks ----------------------------------------------
@@ -347,20 +355,20 @@ spawnmanager:setAutoSpawn(true)
 -- Lua's coroutines basics can be found here: https://www.lua.org/pil/9.1.html
 
 -- Refresh blips every two seconds in case new players join in
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         -- Cleanup any old blips
         removePlayerBlips()
 
         -- Recreate blips
         tryCreateBlips()
-        Citizen.Wait(2000)
+        Wait(2000)
     end
 end)
 
 --- Our main thread.
 -- We use this thread to perform Text/Sprite Rendering, handling drawing of instructional UI, team selection and camera manipulation.
-Citizen.CreateThread(function()
+CreateThread(function()
     local buttonsHandle = RequestScaleformMovie('INSTRUCTIONAL_BUTTONS') -- Request the scaleform to be loaded
     drawScaleFormUI(buttonsHandle)
 
@@ -369,7 +377,7 @@ Citizen.CreateThread(function()
             -- Our spectator team is not in use, it's only there for team selection purposes.
             -- So if we're in that team and we're not in camera selection, we initiate the team selection process.
             if shouldGoIntoCameraSelection() then
-                setIntoTeamSelection(TeamType.TEAM_BLUE, true)
+                setIntoTeamSelection(tdmConfig.type.TEAM_BLUE, true)
             end
 
             -- Run the logic for picking a team
@@ -407,6 +415,6 @@ Citizen.CreateThread(function()
         -- No wanted level
         ClearPlayerWantedLevel(PlayerId())
 
-        Citizen.Wait(0)
+        Wait(0)
     end
 end)
