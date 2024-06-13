@@ -12,10 +12,10 @@
         - CTFGame:shutDown: Handles cleanup tasks upon game shutdown, including flag and team destruction.
 
     Event Handlers:
-        - playerJoining: Handles player joining events, triggering team data updates for the client.
-        - requestTeamData: Responds to client requests for team data.
-        - sendTeamDataToClient: Sends team data to clients for UI and game state updates.
-        - assignPlayerTeam: Assigns a team to a player.
+        - playerJoining: https://docs.fivem.net/docs/resources/example-resources/events/cft-gamemode/playerJoining/
+        - requestTeamData: https://docs.fivem.net/docs/resources/example-resources/events/cft-gamemode/requestTeamData/
+        - sendTeamDataToClient: https://docs.fivem.net/docs/resources/example-resources/events/cft-gamemode/sendTeamDataToClient/
+        - assignPlayerTeam: https://docs.fivem.net/docs/resources/example-resources/events/cft-gamemode/assignPlayerTeam/
     
     Classes:
         - Team: Represents a team in the CTF game mode.

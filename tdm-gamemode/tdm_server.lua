@@ -16,7 +16,7 @@
         - TDMGame:getLeadingTeam: Determines the leading team based on kills count.
 
     Event Handlers:
-        - tdm:onPlayerKilled: Handles player kill events, updating team kills count and notifying clients.
+        - tdm:onPlayerKilled: https://docs.fivem.net/docs/resources/example-resources/events/tdm-gamemode/onPlayerKilled/
 
     Variables:
         - teamAssignments: Stores player assignments to different teams for balancing purposes.

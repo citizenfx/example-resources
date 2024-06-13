@@ -6,7 +6,7 @@
             - Draws instructional UI on the screen: (see drawScaleFormUI).
         - Contains helper methods to draw text on the screen.
     Event handlers:
-        - SendClientHudNotification: Dispatched by the server to display simple 'toast' UI notifications on the client.
+        - SendClientHudNotification: https://docs.fivem.net/docs/resources/example-resources/events/ctf-gamemode/SendClientHudNotification/
 ]]
 
 -- Store UI configuration from ctfConfig.UI.

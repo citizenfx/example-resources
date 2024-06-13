@@ -9,7 +9,7 @@
             - To receive team data from the server via events: (see receiveTeamData).
     
     Event handlers:
-        - SendClientHudNotification: Dispatched by the server to display simple 'toast' UI notifications on the client.
+        - SendClientHudNotification: https://docs.fivem.net/docs/resources/example-resources/events/tdm-gamemode/SendClientHudNotification/
         - playerSpawned: Dispatched by FiveM resource spawnManager when the player spawns (https://docs.fivem.net/docs/resources/spawnmanager/events/playerSpawned/)
             We use this event to set the player's position to the base position on first spawn (or respawn after death).
         - gameEventTriggered: Used in conjunction with CEventNetworkEntityDamage to check if the player was killed.
