@@ -12,10 +12,10 @@
         - CTFGame:shutDown: Handles cleanup tasks upon game shutdown, including flag and team destruction.
 
     Event Handlers:
-        - playerJoining: Handles player joining events, triggering team data updates for the client.
-        - requestTeamData: Responds to client requests for team data.
-        - sendTeamDataToClient: Sends team data to clients for UI and game state updates.
-        - assignPlayerTeam: Assigns a team to a player.
+        - playerJoining: https://docs.fivem.net/docs/resources/example-resources/events/cft-gamemode/playerJoining/
+        - requestTeamData: https://docs.fivem.net/docs/resources/example-resources/events/cft-gamemode/requestTeamData/
+        - sendTeamDataToClient: https://docs.fivem.net/docs/resources/example-resources/events/cft-gamemode/sendTeamDataToClient/
+        - assignPlayerTeam: https://docs.fivem.net/docs/resources/example-resources/events/cft-gamemode/assignPlayerTeam/
     
     Classes:
         - Team: Represents a team in the CTF game mode.
@@ -109,7 +109,7 @@ function Team:createBaseObject()
 
     -- wait until it has been created
     while not DoesEntityExist(baseEntity) do
-        Citizen.Wait(1)
+        Wait(1)
     end
 
     -- Now that it's created we can set its state
@@ -216,12 +216,12 @@ end
 -- @see NetworkGetNetworkIdFromEntity
 -- @see EFlagStatuses
 function Flag:spawn()
-    print('Spawning flag at: ' .. self.spawnPosition)
+    print('^5[INFO] ^7Spawning flag at: ' .. tostring(self.spawnPosition))
     -- Calls server setter CREATE_OBJECT_NO_OFFSET, to create an entity on the server
     local flagEntity = CreateObjectNoOffset(self.modelHash, self.spawnPosition)
 
     while not DoesEntityExist(flagEntity) do -- wait until it has been created
-        Citizen.Wait(1)
+        Wait(1)
     end
 
     -- Make the object fall so it doesn't stay still in the air by setting the z-velocity
@@ -349,7 +349,7 @@ end
 --- Sets the position of the flag entity.
 -- @param position (vector3) The new position to set for the flag.
 function Flag:setPosition(position)
-    print("setPosition: " .. position .. " entity: " .. tostring(self.entity))
+    print("^5[INFO] ^2setPosition: ^5" .. position .. " ^2entity: ^5" .. tostring(self.entity))
     SetEntityCoords(self.entity, position.x, position.y, position.z, true, true, true, true)
 end
 
@@ -724,9 +724,9 @@ AddEventHandler('playerDropped', function (reason)
 end)
 
 -- Main game loop
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         ctfGame:update()
-        Citizen.Wait(500)  -- Adjust the interval as needed
+        Wait(500)  -- Adjust the interval as needed
     end
 end)

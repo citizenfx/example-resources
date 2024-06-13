@@ -14,21 +14,27 @@
 
 tdmConfig = {}
 
+tdmConfig.type = {
+    TEAM_BLUE = 1,
+    TEAM_RED = 2,
+    TEAM_SPECTATOR = 3,
+}
+
 tdmConfig.teams = {
     {
-        id = TeamType.TEAM_RED,
+        id = tdmConfig.type.TEAM_RED,
         basePosition = vector3(2555.1860, -333.1058, 92.9928),
         playerModel = 'a_m_y_beachvesp_01',
         playerHeading = 90.0
     },
     {
-        id = TeamType.TEAM_BLUE,
+        id = tdmConfig.type.TEAM_BLUE,
         basePosition = vector3(2574.9807, -342.9044, 92.9928),
         playerModel = 's_m_m_armoured_02',
         playerHeading = 90.0
     },
     {
-        id = TeamType.TEAM_SPECTATOR,
+        id = tdmConfig.type.TEAM_SPECTATOR,
         basePosition = vector3(2574.9807, -342.9044, 92.9928),
         playerModel = 's_m_m_armoured_02',
         playerHeading = 90.0
@@ -37,11 +43,6 @@ tdmConfig.teams = {
 }
 
 tdmConfig.UI = {
-    btnCaptions = {
-        Spawn = "Spawn",
-        NextTeam = "Next Team",
-        PreviousTeam = "Previous Team"
-    },
     teamTxtProperties = {
         x = 1.0,            -- Screen X coordinate
         y = 0.9,            -- Screen Y coordinate

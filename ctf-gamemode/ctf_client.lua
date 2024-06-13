@@ -2,7 +2,7 @@
     File: ctf_client.lua
     Description:
         This is the main client file and its main purpose is:
-            - To handle the following client related logic executed via our main thread: (see Citizen.CreateThread).
+            - To handle the following client related logic executed via our main thread: (see CreateThread).
                 - To perform team selection and camera manipulation if the user is in camera selection: (see boolean bInTeamSelection).
             
             - To handle certain client-side flag logic:
@@ -79,11 +79,11 @@ AddEventHandler("SetObjectiveVisible", function(flagEntityNetID, bVisible)
         -- Call NetToEnt to get the entity handle from our net handle (flagEntityNetID), which is sent by the server.
         local flagEntity = NetToEnt(flagEntityNetID)
 
-        print("SetObjectiveVisible: " .. GetEntityArchetypeName(flagEntity) .. " to our player, owner is: " .. GetPlayerName(NetworkGetEntityOwner(flagEntity)))
+        Citizen.Trace("SetObjectiveVisible: " .. GetEntityArchetypeName(flagEntity) .. " to our player, owner is: " .. GetPlayerName(NetworkGetEntityOwner(flagEntity)))
 
         SetEntityVisible(flagEntity, bVisible)
     else
-        print("AttachFlagToPlayer: Something terrible happened, where's our flag?")
+        Citizen.Trace("AttachFlagToPlayer: Something terrible happened, where's our flag?")
     end
 end)
 
@@ -359,7 +359,7 @@ function processFlagLogic(flagEntityNetID)
             local playerPed = PlayerPedId()
             if entityHasEntityInRadius(ent, playerPed) and not IsEntityDead(playerPed) then
                 TriggerServerEvent("requestFlagUpdate")
-                Citizen.Wait(500)
+                Wait(500)
             end
         end
     end  
@@ -422,11 +422,12 @@ spawnmanager:setAutoSpawn(true)
 ----------------------------------------------- Threads -----------------------------------------------
 
 -- Process the client flag logic for each flag every tick
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
-        if not bInTeamSelection then
-            if receivedServerTeams and #receivedServerTeams > 0 then
-                for _, team in ipairs(receivedServerTeams) do
+        if not isInTeamSelection() then
+            local teamReceived = getReceivedServerTeams()
+            if teamReceived and #teamReceived > 0 then
+                for _, team in ipairs(teamReceived) do
                     -- Run flag logic if they are not in camera/team selection
                     if team.id ~= TeamType.TEAM_SPECTATOR then
                         processFlagLogic(team.flagNetworkedID)
@@ -434,13 +435,13 @@ Citizen.CreateThread(function()
                 end
             end
         end
-        Citizen.Wait(0)
+        Wait(0)
     end
 end)
 
 --- Our main thread.
 -- We use this thread to handle team selection and to process any flag related logic.
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         if receivedServerTeams and #receivedServerTeams > 0 then
             if shouldGoIntoTeamSelection() and not bIsAttemptingToSwitchTeams then
@@ -466,6 +467,6 @@ Citizen.CreateThread(function()
         -- Process all rendering logic for this frame
         ctfRenderingRenderThisFrame()
 
-        Citizen.Wait(0)
+        Wait(0)
     end
 end)
