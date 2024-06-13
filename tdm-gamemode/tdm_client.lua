@@ -109,7 +109,7 @@ end
 
 local buttonMessage = function(text)
     BeginTextCommandScaleformString("STRING")
-    AddTextComponentScaleform(Locales[tostring(GetCurrentLanguage())][text] or text) -- Calling native every time so if player change game language, it will update automatically
+    AddTextComponentSubstringKeyboardDisplay(Locales[tostring(GetCurrentLanguage())][text] or text) -- Calling native every time so if player change game language, it will update automatically
     EndTextCommandScaleformString()
 end
 
@@ -123,20 +123,20 @@ local drawScaleFormUI = function(buttonsHandle)
 
     CallScaleformMovieMethod(buttonsHandle, 'CLEAR_ALL') -- Clear previous buttons
 
-    PushScaleformMovieFunction(buttonsHandle, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(2)
+    BeginScaleformMovieMethod(buttonsHandle, "SET_DATA_SLOT")
+    ScaleformMovieMethodAddParamInt(2)
     ScaleformMovieMethodAddParamPlayerNameString("~INPUT_SPRINT~")
     buttonMessage('spawn')
     PopScaleformMovieFunctionVoid()
 
-    PushScaleformMovieFunction(buttonsHandle, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(1)
+    BeginScaleformMovieMethod(buttonsHandle, "SET_DATA_SLOT")
+    ScaleformMovieMethodAddParamInt(1)
     ScaleformMovieMethodAddParamPlayerNameString("~INPUT_ATTACK~")
     buttonMessage('previous_team')
     PopScaleformMovieFunctionVoid()
 
-    PushScaleformMovieFunction(buttonsHandle, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(0)
+    BeginScaleformMovieMethod(buttonsHandle, "SET_DATA_SLOT")
+    ScaleformMovieMethodAddParamInt(0)
     ScaleformMovieMethodAddParamPlayerNameString("~INPUT_AIM~") -- The button to display
     buttonMessage('next_team') -- the message to display next to it
     PopScaleformMovieFunctionVoid()
@@ -192,9 +192,9 @@ local drawTxt = function(x, y, width, height, scale, text, r, g, b, a)
     SetTextDropShadow()
     SetTextOutline()
     -- Let's use our previously created text entry 'textRenderingEntry'
-    SetTextEntry("textRenderingEntry")
-    AddTextComponentString(text)
-    DrawText(x - width/2, y - height/2 + 0.005)    
+    BeginTextCommandDisplayText("textRenderingEntry")
+    AddTextComponentSubstringPlayerName(text)
+    EndTextCommandDisplayText(x - width/2, y - height/2 + 0.005)    
 end
 
 --- Handles player input for team selection.
@@ -382,7 +382,7 @@ CreateThread(function()
 
             -- Run the logic for picking a team
             if bInTeamSelection then
-                DisableRadarThisFrame()
+                HideMinimapExteriorMapThisFrame()
                 HideHudAndRadarThisFrame()
 
                 -- Draw the instructional buttons this frame

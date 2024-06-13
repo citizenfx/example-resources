@@ -67,7 +67,7 @@ function ctfRenderingRenderThisFrame()
         end
 
         if isInTeamSelection() then
-            DisableRadarThisFrame()
+            HideMinimapExteriorMapThisFrame()
             HideHudAndRadarThisFrame()
             DrawScaleformMovieFullscreen(buttonsHandle, 255, 255, 255, 255, 1) -- Draw the instructional buttons this frame
             
@@ -121,7 +121,7 @@ end
 
 function buttonMessage(text)
     BeginTextCommandScaleformString("STRING")
-    AddTextComponentScaleform(text)
+    AddTextComponentSubstringKeyboardDisplay(text)
     EndTextCommandScaleformString()
 end
 
@@ -135,20 +135,20 @@ function drawScaleFormUI(buttonsHandle)
 
     CallScaleformMovieMethod(buttonsHandle, 'CLEAR_ALL') -- Clear previous buttons
 
-    PushScaleformMovieFunction(buttonsHandle, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(2)
+    BeginScaleformMovieMethod(buttonsHandle, "SET_DATA_SLOT")
+    ScaleformMovieMethodAddParamInt(2)
     ScaleformMovieMethodAddParamPlayerNameString("~INPUT_SPRINT~")
     buttonMessage(btnCaptions.Spawn)
     PopScaleformMovieFunctionVoid()
 
-    PushScaleformMovieFunction(buttonsHandle, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(1)
+    BeginScaleformMovieMethod(buttonsHandle, "SET_DATA_SLOT")
+    ScaleformMovieMethodAddParamInt(1)
     ScaleformMovieMethodAddParamPlayerNameString("~INPUT_ATTACK~")
     buttonMessage(btnCaptions.PreviousTeam)
     PopScaleformMovieFunctionVoid()
 
-    PushScaleformMovieFunction(buttonsHandle, "SET_DATA_SLOT")
-    PushScaleformMovieFunctionParameterInt(0)
+    BeginScaleformMovieMethod(buttonsHandle, "SET_DATA_SLOT")
+    ScaleformMovieMethodAddParamInt(0)
     ScaleformMovieMethodAddParamPlayerNameString("~INPUT_AIM~") -- The button to display
     buttonMessage(btnCaptions.NextTeam) -- the message to display next to it
     PopScaleformMovieFunctionVoid()
@@ -182,9 +182,9 @@ function drawTxt(x,y,width,height,scale, text, r,g,b,a)
     SetTextDropShadow()
     SetTextOutline()
     -- Let's use our previously created text entry 'textRenderingEntry'
-    SetTextEntry("textRenderingEntry")
-    AddTextComponentString(text)
-    DrawText(x - width/2, y - height/2 + 0.005)
+    BeginTextCommandDisplayText("textRenderingEntry")
+    AddTextComponentSubstringPlayerName(text)
+    EndTextCommandDisplayText(x - width/2, y - height/2 + 0.005)
 end
 
 ---  https://forum.cfx.re/t/draw-3d-text-as-marker/2643565/2
@@ -205,9 +205,9 @@ function Draw3DText(x, y, z, scl_factor, text)
         SetTextDropShadow()
         SetTextOutline()
         -- Let's use our previously created text entry 'textRenderingEntry'
-        SetTextEntry("textRenderingEntry")
+        BeginTextCommandDisplayText("textRenderingEntry")
         SetTextCentre(1)
-        AddTextComponentString(text)
-        DrawText(_x, _y)
+        AddTextComponentSubstringPlayerName(text)
+        EndTextCommandDisplayText(_x, _y)
     end
 end
